@@ -11,13 +11,19 @@ int size = 16; //number of pixels
 int w = size * num_horzBox;  //background number of pixels in width 
 int h = size * num_vertBox;    //background number of pixels in height 
 
+//Power-ups
+//Portal: Teleports player to random location
+struct Portal {
+	int x, y;
+};
+
+Portal portal;
 
 //The direction of player one
 int direction;    //direction the player is moving
 
 //The direction of player two
 int directionTwo; //direction the second player is moving
-
 
 //The Struct of a player in the game
 struct Player
@@ -34,8 +40,7 @@ Player p2;
 
 //This represents the bullets fired by each player
 struct Bullet
-{
-	int x, y;            //the coordinates for the bullet 
+{	int x, y;            //the coordinates for the bullet 
 	int direction = -1;  //the direction of the bullet
 	bool fired = false;  //the bullet was fired
 };
@@ -43,14 +48,7 @@ struct Bullet
 //Create two bullets
 Bullet b1;
 Bullet b2;
-
-
-//This represents the 
-
-//bullet collision detection
-void bulletCollision() {
-
-}
+ 
 
 //Updates the location of player one's bullets
 //Checks for collisions 
@@ -84,44 +82,57 @@ void bulletOneMove() {
 			b1.fired = false;
 			b1.x = p1.x;
 			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
 			//Kill the player
 			p2.alive = false;
 		}
 
 		//Check for collision with enemy bullet
-		if (b1.x == b2.x &&b1.y == b2.y) {
+		if (b1.x == b2.x && b1.y == b2.y) {
 			//the bullets collided
 			b1.fired = false;
 			b2.fired = false;
-
 			b2.x = p2.x;
 			b2.y = p2.y;
 			b1.x = p1.x;
 			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
+			b2.direction = p2.dirTemp;
 
 		}
 		//check for collision with wall
 		if (b1.x > num_horzBox - 1) {
 			b1.fired = false;
+			b1.x = p1.x;
+			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
 		}
 
 		//Left
 		if (b1.x < 0) {
 			b1.fired = false;
+			b1.x = p1.x;
+			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
 		}
-	
+
 		//Bottom
 		if (b1.y > num_vertBox - 1) {
 			b1.fired = false;
+			b1.x = p1.x;
+			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
 		}
 		//Top
 		if (b1.y < 0) {
 			b1.fired = false;
+			b1.x = p1.x;
+			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
 		}
 
 	}
 }
-
 
 void bulletTwoMove() {
 	if (b2.fired == false) {
@@ -152,10 +163,11 @@ void bulletTwoMove() {
 			b2.fired = false;
 			b2.x = p2.x;
 			b2.y = p2.y;
+			b2.direction = p2.dirTemp;
 
 
 		}
-		
+
 		//check for collision with other bullet
 		if (b1.x == b2.x && b1.y == b2.y) {
 			//Bullets collided
@@ -165,6 +177,8 @@ void bulletTwoMove() {
 			b2.y = p2.y;
 			b1.x = p1.x;
 			b1.y = p1.y;
+			b1.direction = p1.dirTemp;
+			b2.direction = p2.dirTemp;
 
 
 		}
@@ -172,23 +186,38 @@ void bulletTwoMove() {
 		//check for collision with wall
 		if (b2.x > num_horzBox - 1) {
 			b2.fired = false;
+			b2.x = p2.x;
+			b2.y = p2.y;
+
+			b2.direction = p2.dirTemp;
 		}
 
 		//Left
 		if (b2.x < 0) {
 			b2.fired = false;
+			b2.x = p2.x;
+			b2.y = p2.y;
+			b2.direction = p2.dirTemp;
 		}
 
 		//Bottom
 		if (b2.y > num_vertBox - 1) {
 			b2.fired = false;
+			b2.x = p2.x;
+			b2.y = p2.y;
+			b2.direction = p2.dirTemp;
 		}
 		//Top
 		if (b2.y < 0) {
 			b2.fired = false;
+			b2.x = p2.x;
+			b2.y = p2.y;
+			b2.direction = p2.dirTemp;
 		}
 	}
 }
+
+
 
 void move() {
 	//We want to fire the bullet if the players hit their shoot key
@@ -199,7 +228,7 @@ void move() {
 
 	if (directionTwo == 4) {
 		b2.fired = true;
-		
+
 	}
 
 	//We want to move both players up if they hit their up key
@@ -248,10 +277,10 @@ void move() {
 	//Boundary Checking both players
 	//Players can not leave the screen
 	//LEFT and RIGHT 
-	if (p1.x > num_horzBox-1) {
+	if (p1.x > num_horzBox - 1) {
 		p1.x -= 1;
 	}
-	if (p2.x > num_horzBox-1) {
+	if (p2.x > num_horzBox - 1) {
 		p2.x -= 1;
 	}
 
@@ -263,10 +292,10 @@ void move() {
 	}
 
 	//TOP and BOTTOM 
-	if (p1.y > num_vertBox-1) {
+	if (p1.y > num_vertBox - 1) {
 		p1.y -= 1;
 	}
-	if (p2.y > num_vertBox-1) {
+	if (p2.y > num_vertBox - 1) {
 		p2.y -= 1;
 	}
 
@@ -277,25 +306,25 @@ void move() {
 		p2.y += 1;
 	}
 
-
+	
 	//I need to know the last looking location to determine the shooting path
-	if (direction != -1) {
+	if (direction != -1 && direction !=4) {
 		if (b1.fired == false) {
 			b1.direction = direction;
 		}
 		p1.dirTemp = direction;
 	}
-	else if(b1.fired==false) {
+	else if (b1.fired == false) {
 		b1.direction = p1.dirTemp;
 	}
 
-	if (directionTwo != -1) {
+	if (directionTwo != -1 && directionTwo != 4) {
 		if (b2.fired == false) {
 			b2.direction = directionTwo;
 		}
 		p2.dirTemp = directionTwo;
 	}
-	else if(b2.fired ==false)
+	else if (b2.fired == false)
 	{
 		b2.direction = p2.dirTemp;
 	}
@@ -316,12 +345,14 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(w, h), "2D-Shooter");
 
 	//Textures load an image into the GPU Memory 
-	sf::Texture t1, t2, t3, t4,t5;
-	t1.loadFromFile("image/white.png");
+	sf::Texture t1, t2, t3, t4, t5,t6;
+	t1.loadFromFile("image/background.png");
 	t2.loadFromFile("image/red.png");
 	t3.loadFromFile("image/green.png");
-	t4.loadFromFile("image/strawberry.png");
+	t4.loadFromFile("image/fire.png");
 	t5.loadFromFile("image/dead.png");
+	t6.loadFromFile("image/white.png");
+	
 
 
 	//Sprite has physical dimmensions that can be set in  
@@ -331,14 +362,21 @@ int main()
 	sf::Sprite sprite3(t3);
 	sf::Sprite sprite4(t4);
 	sf::Sprite sprite5(t5);
+	sf::Sprite sprite6(t6);
+
+
 	
-
-
 
 	sf::Clock clock;
 	float timer = 0.0f, delay = 0.09f;
-	float delayTwo =0.14;
+	float delayTwo = 0.14;
 	int counter = 0;
+
+
+	//randomly place the portal
+	portal.x = (int) rand() % num_horzBox;
+	portal.y = (int) rand() % num_vertBox;
+
 	while (window.isOpen())
 	{
 		//Error in class I placed this before the while loop 
@@ -348,7 +386,7 @@ int main()
 		float time = clock.getElapsedTime().asSeconds();
 		clock.restart();
 		timer += time;
-		
+
 		//Allow us to check when a user does something 
 		sf::Event e;
 
@@ -362,17 +400,18 @@ int main()
 			}
 		}
 
-		
+
 		if (timer > delay)
 		{
-			
+
 			timer = 0; //reset timer 
-			if (counter % 2== 0) {
+			if (counter % 2 == 0) {
 				move();    //move the players 
 			}
 			counter++;
 			bulletOneMove(); //move the bullet
 			bulletTwoMove(); //move the bullet
+
 
 		}
 
@@ -420,7 +459,7 @@ int main()
 
 			}
 		}
-		
+
 		//2nd: Draw in any bullets if they were fired
 		sprite4.setPosition(b1.x*size, b1.y*size);
 		window.draw(sprite4);
@@ -434,10 +473,11 @@ int main()
 		if (p1.alive) {
 			sprite2.setPosition(p1.x*size, p1.y*size);
 			window.draw(sprite2);
-			}
+		}
 		else {
 			sprite5.setPosition(p1.x*size, p1.y*size);
 			window.draw(sprite5);
+			
 		}
 
 		if (p2.alive) {
@@ -447,15 +487,20 @@ int main()
 		else {
 			sprite5.setPosition(p2.x*size, p2.y*size);
 			window.draw(sprite5);
-
-		}
 		
 
-			//Show everything we have drawn on the screen	
-			window.display();
-				
-	}
+		}
 
+		//Display the portal
+		sprite6.setPosition(portal.x*size, portal.y*size);
+		window.draw(sprite6);
+
+
+		//Show everything we have drawn on the screen	
+		window.display();
+
+	}
+	
 	return 0;
 
 }
